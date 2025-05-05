@@ -1,6 +1,3 @@
-import pytest
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--run-db-tests",
@@ -11,4 +8,5 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "dbtest: mark test as requiring the database")
+    config.addinivalue_line("markers",
+                            "dbtest: mark test as requiring the database")
