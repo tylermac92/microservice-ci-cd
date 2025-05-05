@@ -36,18 +36,36 @@ jobs:
       - run: npx eslint . --ext .js,.jsx
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: microservice
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     defaults:
       run:
         working-directory: backend
     env:
-      DATABASE_URL: postgresql://fakeuser:fakepass@localhost:5432/fakedb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: microservice
+      DB_HOST: localhost
+      DB_PORT: 5432
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: 3.11
       - run: pip install -r requirements.txt
-      - run: pytest -m "not dbtest"
+      - run: pytest
 
   frontend:
     runs-on: ubuntu-latest
