@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - run: pip install -r requirements.txt
+      - run: pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test -- --watchAll=false
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build & Push Backend
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/microservice-ci-cd-backend:latest ./backend
+          docker push ghcr.io/${{ github.repository_owner }}/microservice-ci-cd-backend:latest
+
+      - name: Build & Push Frontend
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/microservice-ci-cd-frontend:latest ./frontend
+          docker push ghcr.io/${{ github.repository_owner }}/microservice-ci-cd-frontend:latest
