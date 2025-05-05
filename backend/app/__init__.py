@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from app.routes import bp as routes_bp
 import os
 
+
 def create_app():
     app = Flask(__name__)
     CORS(app)

@@ -4,9 +4,11 @@ from app import create_app
 
 pytestmark = pytest.mark.dbtest
 
+
 @pytest.fixture
 def app():
     return create_app()
+
 
 def test_database_connection(app):
     with app.app_context():
