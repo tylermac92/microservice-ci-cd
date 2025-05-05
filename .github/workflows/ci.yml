@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      - run: npx eslint .
+      - run: npx eslint . --ext .js,.jsx
   backend:
     runs-on: ubuntu-latest
     defaults:
