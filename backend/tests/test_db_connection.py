@@ -2,10 +2,7 @@ import pytest
 from sqlalchemy import text
 from app import create_app
 
-pytestmark = pytest.mark.skipif(
-    not pytest.config.getoption("--run-db-tests", default=False),
-    reason="requires --run-db-tests to run"
-)
+pytestmark = pytest.mark.dbtest
 
 @pytest.fixture
 def app():

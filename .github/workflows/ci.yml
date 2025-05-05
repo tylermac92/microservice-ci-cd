@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: 3.11
       - run: pip install -r requirements.txt
-      - run: pytest -k "not test_database_connection"
+      - run: pytest -m "not dbtest"
 
   frontend:
     runs-on: ubuntu-latest
