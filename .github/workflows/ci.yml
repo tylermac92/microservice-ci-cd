@@ -11,6 +11,8 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    env:
+      DATABASE_URL: postgresql://fakeuser:fakepass@localhost:5432/fakedb
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
