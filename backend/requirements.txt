@@ -1,6 +1,6 @@
-flask
-gunicorn
-pytest
-flask-cors
+Flask
+flask_sqlalchemy
+flask_cors
 psycopg2-binary
-sqlalchemy
+gunicorn
+Flask-JWT-Extended

@@ -1,22 +1,31 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from sqlalchemy import create_engine
-from app.routes import bp as routes_bp
 import os
 
+db = SQLAlchemy()
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
-    CORS(app)
 
-    db_user = os.getenv("DB_USER", "postgres")
-    db_pass = os.getenv("DB_PASSWORD", "postgres")
-    db_host = os.getenv("DB_HOST", "localhost")
-    db_name = os.getenv("DB_NAME", "postgres")
-    db_port = os.getenv("DB_PORT", "5432")
+    # Set default config
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'super-secret-key')
 
-    db_url = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
-    app.db_engine = create_engine(db_url, future=True)
+    if test_config:
+        app.config.update(test_config)
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
+    db.init_app(app)
+    JWTManager(app)
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
+    from .auth import bp as auth_bp
+    app.register_blueprint(auth_bp)
+
+    from .routes import bp as routes_bp
     app.register_blueprint(routes_bp)
+
     return app
